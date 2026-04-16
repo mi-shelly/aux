@@ -592,8 +592,9 @@
         }
 
         markBackgroundImages() {
-            // Only needed for Inverted mode (other modes use explicit :not() selectors)
-            const needsMarking = this.settings.contrast === 'inverted';
+            // Needed for modes that invert the page – so elements with
+            // class-based background-images can be counter-inverted.
+            const needsMarking = ['dark', 'inverted'].includes(this.settings.contrast);
 
             if (!needsMarking) {
                 document.querySelectorAll('.aux-has-bg-image').forEach(el => {
@@ -604,7 +605,7 @@
 
             const elements = document.querySelectorAll('body *:not(.aux-widget):not(.aux-widget *)');
             let count = 0;
-            const MAX_SCAN = 2000;
+            const MAX_SCAN = 5000;
 
             for (const el of elements) {
                 if (count++ > MAX_SCAN) break;

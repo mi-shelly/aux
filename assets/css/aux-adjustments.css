@@ -1,197 +1,74 @@
 /**
  * Aux Accessibility Widget – Page Adjustments
  * These classes are applied to <html> to modify page appearance.
- * Uses html.aux-contrast-* for high specificity, !important to override site styles.
+ *
+ * Contrast strategy:
+ * - Dunkel / Invertiert: filter-based (invert colors, counter-invert media
+ *   so images/videos/bg-images look natural). The site's design structure
+ *   is preserved; only the luminance is flipped.
+ * - Hell: brightness + contrast + saturation boost. Keeps all colors,
+ *   just makes the page more readable.
+ * - Hoher Kontrast: contrast + saturation boost. Colors stay the same,
+ *   they just become more vivid and distinguishable.
  */
 
-/* ═══════════════════════════════
-   CONTRAST MODES
-   Color-override approach: forces dark/light colors on container
-   elements while leaving images, videos and background-image elements
-   untouched.
-   ═══════════════════════════════ */
+/* ══════════════════════════════════
+   DARK MODE – invert, preserve media
+   ══════════════════════════════════ */
 
-/* ──────── DARK MODE ──────── */
-html.aux-contrast-dark,
-html.aux-contrast-dark body {
-    background-color: #0a0a1a !important;
-    color: #e8e8e8 !important;
-}
-
-/* Containers: force dark backgrounds (unless they have bg images) */
-html.aux-contrast-dark div:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark section:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark article:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark aside:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark header:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark footer:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark nav:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark main:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-dark ul:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-dark ol:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-dark li:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-dark table:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-dark tr:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-dark td:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-dark th:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image) {
-    background-color: #0a0a1a !important;
-    background-image: none !important;
-    color: #e8e8e8 !important;
-    border-color: #333 !important;
-}
-
-/* Text elements */
-html.aux-contrast-dark p:not(.aux-widget p),
-html.aux-contrast-dark span:not(.aux-widget span),
-html.aux-contrast-dark label:not(.aux-widget label),
-html.aux-contrast-dark strong:not(.aux-widget strong),
-html.aux-contrast-dark em:not(.aux-widget em),
-html.aux-contrast-dark small:not(.aux-widget small),
-html.aux-contrast-dark blockquote:not(.aux-widget blockquote),
-html.aux-contrast-dark figcaption:not(.aux-widget figcaption) {
-    color: #e8e8e8 !important;
-    background-color: transparent !important;
-}
-
-/* Headings */
-html.aux-contrast-dark h1:not(.aux-widget h1),
-html.aux-contrast-dark h2:not(.aux-widget h2),
-html.aux-contrast-dark h3:not(.aux-widget h3),
-html.aux-contrast-dark h4:not(.aux-widget h4),
-html.aux-contrast-dark h5:not(.aux-widget h5),
-html.aux-contrast-dark h6:not(.aux-widget h6) {
-    color: #ffffff !important;
-    background-color: transparent !important;
-}
-
-/* Links */
-html.aux-contrast-dark a:not(.aux-widget a) {
-    color: #6db3f2 !important;
-    background-color: transparent !important;
-}
-
-/* Form fields */
-html.aux-contrast-dark input:not(.aux-widget input),
-html.aux-contrast-dark select:not(.aux-widget select),
-html.aux-contrast-dark textarea:not(.aux-widget textarea) {
-    background-color: #1e1e35 !important;
-    color: #e8e8e8 !important;
-    border-color: #555 !important;
-}
-
-html.aux-contrast-dark button:not(.aux-widget button):not(.aux-widget *) {
-    background-color: #1e1e35 !important;
-    color: #e8e8e8 !important;
-    border-color: #555 !important;
-}
-
-/* ──────── LIGHT MODE ──────── */
-html.aux-contrast-light,
-html.aux-contrast-light body {
+html.aux-contrast-dark {
+    filter: invert(1) hue-rotate(180deg) !important;
     background-color: #ffffff !important;
-    color: #000000 !important;
 }
 
-html.aux-contrast-light div:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light section:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light article:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light aside:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light header:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light footer:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light nav:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light main:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image):not([style*="background-image"]):not([style*="background:url"]):not([style*="background: url"]),
-html.aux-contrast-light ul:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-light ol:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image),
-html.aux-contrast-light li:not(.aux-widget):not(.aux-widget *):not(.aux-has-bg-image) {
-    background-color: #ffffff !important;
-    background-image: none !important;
-    color: #000000 !important;
-    border-color: #d1d5db !important;
+/* Counter-invert media so they look natural */
+html.aux-contrast-dark img,
+html.aux-contrast-dark video,
+html.aux-contrast-dark picture,
+html.aux-contrast-dark iframe,
+html.aux-contrast-dark embed,
+html.aux-contrast-dark object,
+html.aux-contrast-dark canvas,
+html.aux-contrast-dark svg:not(.aux-widget svg),
+html.aux-contrast-dark .aux-has-bg-image,
+html.aux-contrast-dark [style*="background-image"],
+html.aux-contrast-dark [style*="background:url"],
+html.aux-contrast-dark [style*="background: url"],
+html.aux-contrast-dark .aux-widget {
+    filter: invert(1) hue-rotate(180deg) !important;
 }
 
-html.aux-contrast-light p:not(.aux-widget p),
-html.aux-contrast-light span:not(.aux-widget span),
-html.aux-contrast-light label:not(.aux-widget label),
-html.aux-contrast-light h1:not(.aux-widget h1),
-html.aux-contrast-light h2:not(.aux-widget h2),
-html.aux-contrast-light h3:not(.aux-widget h3),
-html.aux-contrast-light h4:not(.aux-widget h4),
-html.aux-contrast-light h5:not(.aux-widget h5),
-html.aux-contrast-light h6:not(.aux-widget h6) {
-    color: #000000 !important;
-    background-color: transparent !important;
-}
-
-html.aux-contrast-light a:not(.aux-widget a) {
-    color: #0000ee !important;
-    text-decoration: underline !important;
-    background-color: transparent !important;
+/* Keep widget on top even with filter creating stacking context */
+html.aux-contrast-dark .aux-widget,
+html.aux-contrast-inverted .aux-widget {
+    position: fixed !important;
+    z-index: 2147483647 !important;
 }
 
 
-/* ──────── HIGH CONTRAST (Black/White/Yellow) ──────── */
-html.aux-contrast-high,
-html.aux-contrast-high body {
-    background: #000000 !important;
-    color: #ffffff !important;
+/* ══════════════════════════════════
+   LIGHT MODE – brighter, no color change
+   ══════════════════════════════════ */
+
+html.aux-contrast-light {
+    filter: brightness(1.12) contrast(1.08) saturate(1.15) !important;
 }
 
-/* All containers transparent so body's black shows through */
-html.aux-contrast-high *:not(.aux-widget):not(.aux-widget *) {
-    background-color: transparent !important;
-    background-image: none !important;
-    color: #ffffff !important;
-    border-color: #ffffff !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
+
+/* ══════════════════════════════════
+   HIGH CONTRAST – boost contrast only,
+   keep the site's original colors
+   ══════════════════════════════════ */
+
+html.aux-contrast-high {
+    filter: contrast(1.5) saturate(1.3) !important;
 }
 
-html.aux-contrast-high body:not(.aux-widget) {
-    background-color: #000000 !important;
-}
 
-/* Media: convert to grayscale with boosted contrast for readability */
-html.aux-contrast-high img:not(.aux-widget img),
-html.aux-contrast-high video:not(.aux-widget video),
-html.aux-contrast-high picture:not(.aux-widget picture),
-html.aux-contrast-high canvas:not(.aux-widget canvas),
-html.aux-contrast-high svg:not(.aux-widget svg),
-html.aux-contrast-high iframe:not(.aux-widget iframe) {
-    filter: grayscale(1) contrast(1.5) brightness(1.1) !important;
-}
+/* ══════════════════════════════════
+   INVERTED – pure inversion
+   ══════════════════════════════════ */
 
-/* Links */
-html.aux-contrast-high a:not(.aux-widget a),
-html.aux-contrast-high a:not(.aux-widget a) *:not(.aux-widget *) {
-    color: #ffff00 !important;
-    text-decoration: underline !important;
-}
-
-/* Visited links */
-html.aux-contrast-high a:visited:not(.aux-widget a) {
-    color: #ff99ff !important;
-}
-
-/* Interactive elements: visible borders */
-html.aux-contrast-high button:not(.aux-widget button),
-html.aux-contrast-high input:not(.aux-widget input),
-html.aux-contrast-high select:not(.aux-widget select),
-html.aux-contrast-high textarea:not(.aux-widget textarea) {
-    border: 2px solid #ffffff !important;
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    outline: none !important;
-}
-
-html.aux-contrast-high button:focus:not(.aux-widget button),
-html.aux-contrast-high input:focus:not(.aux-widget input),
-html.aux-contrast-high select:focus:not(.aux-widget select),
-html.aux-contrast-high textarea:focus:not(.aux-widget textarea) {
-    outline: 3px solid #ffff00 !important;
-    outline-offset: 2px !important;
-}
-
-/* ──────── INVERTED (real color inversion) ──────── */
 html.aux-contrast-inverted {
     filter: invert(1) !important;
     background-color: #ffffff !important;
@@ -211,11 +88,6 @@ html.aux-contrast-inverted [style*="background:url"],
 html.aux-contrast-inverted [style*="background: url"],
 html.aux-contrast-inverted .aux-widget {
     filter: invert(1) !important;
-}
-
-html.aux-contrast-inverted .aux-widget {
-    position: fixed !important;
-    z-index: 2147483647 !important;
 }
 
 
@@ -466,7 +338,7 @@ html.aux-focus-highlight [tabindex]:focus {
 
 
 /* ═══════════════════════════════
-   HIDE IMAGES
+   HIDE IMAGES (only when user toggles)
    ═══════════════════════════════ */
 
 html.aux-hide-images img:not(.aux-widget img),
