@@ -1,0 +1,14 @@
+aux_title = Aux – Accessibility
+aux_config = Settings
+aux_help = Help
+aux_active = Widget active
+aux_yes = Yes
+aux_no = No
+aux_position = Button position
+aux_position_bottom_right = Bottom right
+aux_position_bottom_left = Bottom left
+aux_position_top_right = Top right
+aux_position_top_left = Top left
+aux_button_color = Button color
+aux_save = Save settings
+aux_config_saved = Settings have been saved.

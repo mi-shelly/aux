@@ -1,0 +1,486 @@
+/**
+ * Aux Accessibility Widget – UI Styles
+ * Scoped with .aux- prefix to avoid conflicts
+ */
+
+/* ── CSS Variables ── */
+.aux-widget {
+    --aux-bg: #ffffff;
+    --aux-bg-hover: #f5f5f5;
+    --aux-bg-section: #f9fafb;
+    --aux-text: #1a1a2e;
+    --aux-text-muted: #6b7280;
+    --aux-border: #e5e7eb;
+    --aux-radius: 12px;
+    --aux-radius-sm: 8px;
+    --aux-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --aux-shadow-btn: 0 4px 16px rgba(0, 0, 0, 0.2);
+    --aux-transition: 0.2s ease;
+    --aux-active: #e0edff;
+    --aux-active-border: var(--aux-btn-color, #1a73e8);
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--aux-text);
+    z-index: 999999;
+}
+
+/* ── Position ── */
+.aux-widget[data-position="bottom-right"] {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+}
+
+.aux-widget[data-position="bottom-left"] {
+    position: fixed;
+    bottom: 50px;
+    left: 20px;
+}
+
+.aux-widget[data-position="top-right"] {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
+.aux-widget[data-position="top-left"] {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+}
+
+/* ── Toggle Button ── */
+.aux-toggle-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: var(--aux-btn-color, #1a73e8);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--aux-shadow-btn);
+    transition: transform var(--aux-transition), box-shadow var(--aux-transition);
+    position: relative;
+    z-index: 2;
+}
+
+.aux-toggle-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+}
+
+.aux-toggle-btn:focus-visible {
+    outline: 3px solid var(--aux-btn-color, #1a73e8);
+    outline-offset: 3px;
+}
+
+.aux-toggle-btn svg {
+    width: 28px;
+    height: 28px;
+}
+
+/* ── Panel ── */
+.aux-panel {
+    position: absolute;
+    width: 340px;
+    max-height: 80vh;
+    background: var(--aux-bg);
+    border-radius: var(--aux-radius);
+    box-shadow: var(--aux-shadow);
+    border: 1px solid var(--aux-border);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.95);
+    transition: opacity var(--aux-transition), transform var(--aux-transition), visibility var(--aux-transition);
+    z-index: 1;
+}
+
+/* Panel position relative to button */
+.aux-widget[data-position="bottom-right"] .aux-panel {
+    bottom: 70px;
+    right: 0;
+}
+
+.aux-widget[data-position="bottom-left"] .aux-panel {
+    bottom: 70px;
+    left: 0;
+}
+
+.aux-widget[data-position="top-right"] .aux-panel {
+    top: 70px;
+    right: 0;
+}
+
+.aux-widget[data-position="top-left"] .aux-panel {
+    top: 70px;
+    left: 0;
+}
+
+.aux-panel-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* ── Panel Header ── */
+.aux-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--aux-border);
+    background: var(--aux-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.aux-panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--aux-text);
+}
+
+.aux-panel-title svg {
+    color: var(--aux-btn-color, #1a73e8);
+}
+
+.aux-close-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--aux-text-muted);
+    transition: background var(--aux-transition), color var(--aux-transition);
+}
+
+.aux-close-btn:hover {
+    background: var(--aux-bg-hover);
+    color: var(--aux-text);
+}
+
+.aux-close-btn:focus-visible {
+    outline: 2px solid var(--aux-active-border);
+    outline-offset: 2px;
+}
+
+/* ── Panel Body ── */
+.aux-panel-body {
+    overflow-y: auto;
+    max-height: calc(80vh - 60px);
+    padding: 8px 0;
+}
+
+/* ── Sections ── */
+.aux-section {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--aux-border);
+}
+
+.aux-section:last-child {
+    border-bottom: none;
+}
+
+.aux-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--aux-text-muted);
+    margin: 0 0 10px 0;
+}
+
+/* ── Profiles Grid ── */
+.aux-profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.aux-profile-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 4px;
+    border: 2px solid var(--aux-border);
+    border-radius: var(--aux-radius-sm);
+    background: var(--aux-bg);
+    cursor: pointer;
+    transition: all var(--aux-transition);
+    font-size: 12px;
+    color: var(--aux-text);
+}
+
+.aux-profile-btn:hover {
+    background: var(--aux-bg-hover);
+    border-color: var(--aux-text-muted);
+}
+
+.aux-profile-btn:focus-visible {
+    outline: 2px solid var(--aux-active-border);
+    outline-offset: 2px;
+}
+
+.aux-profile-active {
+    background: var(--aux-active) !important;
+    border-color: var(--aux-active-border) !important;
+}
+
+.aux-profile-icon {
+    font-size: 20px;
+}
+
+.aux-profile-label {
+    font-size: 11px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* ── Contrast / Option Buttons ── */
+.aux-option-group {
+    margin-bottom: 12px;
+}
+
+.aux-option-group:last-child {
+    margin-bottom: 0;
+}
+
+.aux-option-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--aux-text);
+}
+
+.aux-contrast-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.aux-contrast-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--aux-border);
+    border-radius: 20px;
+    background: var(--aux-bg);
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--aux-text);
+    transition: all var(--aux-transition);
+}
+
+.aux-contrast-btn:hover {
+    background: var(--aux-bg-hover);
+}
+
+.aux-contrast-btn:focus-visible {
+    outline: 2px solid var(--aux-active-border);
+    outline-offset: 2px;
+}
+
+.aux-contrast-active {
+    background: var(--aux-active) !important;
+    border-color: var(--aux-active-border) !important;
+    font-weight: 600;
+}
+
+/* ── Stepper Controls ── */
+.aux-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--aux-border);
+    border-radius: var(--aux-radius-sm);
+    overflow: hidden;
+    width: fit-content;
+}
+
+.aux-stepper-btn {
+    width: 36px;
+    height: 34px;
+    border: none;
+    background: var(--aux-bg);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--aux-text);
+    transition: background var(--aux-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aux-stepper-btn:hover:not(:disabled) {
+    background: var(--aux-bg-hover);
+}
+
+.aux-stepper-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.aux-stepper-btn:focus-visible {
+    outline: 2px solid var(--aux-active-border);
+    outline-offset: -2px;
+}
+
+.aux-stepper-value {
+    width: 36px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    border-left: 1px solid var(--aux-border);
+    border-right: 1px solid var(--aux-border);
+    line-height: 34px;
+    color: var(--aux-text);
+}
+
+/* ── Toggle Switches ── */
+.aux-toggle-row {
+    padding: 4px 0;
+}
+
+.aux-toggle-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--aux-text);
+}
+
+.aux-toggle {
+    position: relative;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+.aux-toggle:focus-visible {
+    outline: 2px solid var(--aux-active-border);
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+.aux-toggle-track {
+    display: block;
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: #d1d5db;
+    position: relative;
+    transition: background var(--aux-transition);
+}
+
+.aux-toggle-active .aux-toggle-track {
+    background: var(--aux-active-border);
+}
+
+.aux-toggle-thumb {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform var(--aux-transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.aux-toggle-active .aux-toggle-thumb {
+    transform: translateX(18px);
+}
+
+/* ── Reset ── */
+.aux-section-reset {
+    text-align: center;
+    padding: 12px 20px 16px;
+}
+
+.aux-reset-btn {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--aux-border);
+    border-radius: var(--aux-radius-sm);
+    background: var(--aux-bg);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--aux-text-muted);
+    transition: all var(--aux-transition);
+}
+
+.aux-reset-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+.aux-reset-btn:focus-visible {
+    outline: 2px solid var(--aux-active-border);
+    outline-offset: 2px;
+}
+
+/* ── Reading Ruler ── */
+.aux-reading-ruler {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    pointer-events: none;
+    z-index: 999998;
+    border-top: 2px solid rgba(255, 0, 0, 0.5);
+    border-bottom: 2px solid rgba(255, 0, 0, 0.5);
+    background: rgba(255, 255, 0, 0.12);
+    top: 50%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    .aux-panel {
+        width: calc(100vw - 24px);
+        max-height: 70vh;
+        position: fixed;
+        left: 12px !important;
+        right: 12px !important;
+    }
+
+    .aux-widget[data-position="bottom-right"] .aux-panel,
+    .aux-widget[data-position="bottom-left"] .aux-panel {
+        bottom: 80px;
+    }
+
+    .aux-widget[data-position="top-right"] .aux-panel,
+    .aux-widget[data-position="top-left"] .aux-panel {
+        top: 80px;
+    }
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .aux-widget,
+    .aux-widget * {
+        transition-duration: 0.01ms !important;
+    }
+}

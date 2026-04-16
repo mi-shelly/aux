@@ -1,0 +1,23 @@
+package: aux
+version: '1.1.0'
+author: 'Michelle Falke'
+supportpage: https://github.com/mi-shelly/aux
+requires:
+    redaxo: '^5.16.0'
+    php:
+        version: '>=8.1, <9'
+page:
+    title: 'translate:aux_title'
+    icon: rex-icon fa-solid fa-universal-access
+    perm: admin
+    subpages:
+        config:
+            title: 'translate:aux_config'
+        help:
+            title: 'translate:aux_help'
+            icon: rex-icon fa-question-circle
+            subPath: README.md
+default_config:
+    active: 'true'
+    position: 'bottom-right'
+    button_color: '#1a73e8'
