@@ -25,6 +25,8 @@ class Aux
 
         $position = (string) $addon->getConfig('position', 'bottom-right');
         $buttonColor = (string) $addon->getConfig('button_color', '#1a73e8');
+        $offsetX = (int) $addon->getConfig('offset_x', 20);
+        $offsetY = (int) $addon->getConfig('offset_y', 50);
 
         // Determine language
         $lang = 'de';
@@ -52,6 +54,8 @@ class Aux
 window.auxConfig = {
     position: '{$position}',
     buttonColor: '{$buttonColor}',
+    offsetX: {$offsetX},
+    offsetY: {$offsetY},
     assetsUrl: '{$assetsUrl}',
     lang: '{$lang}',
     i18n: {$translationsJson}

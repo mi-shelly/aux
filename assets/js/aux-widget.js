@@ -118,6 +118,12 @@
             this.container = document.createElement('div');
             this.container.className = 'aux-widget';
 
+            // Apply pixel offsets from backend config as CSS variables
+            const offsetX = (this.config.offsetX !== undefined) ? this.config.offsetX : 20;
+            const offsetY = (this.config.offsetY !== undefined) ? this.config.offsetY : 50;
+            this.container.style.setProperty('--aux-offset-x', offsetX + 'px');
+            this.container.style.setProperty('--aux-offset-y', offsetY + 'px');
+
             const position = this.settings.widgetPosition || this.config.position || 'bottom-right';
             this.applyWidgetPosition(position);
 

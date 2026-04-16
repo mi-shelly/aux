@@ -26,29 +26,33 @@
     z-index: 999999;
 }
 
-/* ── Position ── */
+/* ── Position ──
+   Offsets are controlled via --aux-offset-x and --aux-offset-y
+   which the JS sets from the backend config. Fallbacks match the
+   previous defaults.
+*/
 .aux-widget[data-position="bottom-right"] {
     position: fixed;
-    bottom: 50px;
-    right: 20px;
+    bottom: var(--aux-offset-y, 50px);
+    right: var(--aux-offset-x, 20px);
 }
 
 .aux-widget[data-position="bottom-left"] {
     position: fixed;
-    bottom: 50px;
-    left: 20px;
+    bottom: var(--aux-offset-y, 50px);
+    left: var(--aux-offset-x, 20px);
 }
 
 .aux-widget[data-position="top-right"] {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: var(--aux-offset-y, 20px);
+    right: var(--aux-offset-x, 20px);
 }
 
 .aux-widget[data-position="top-left"] {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: var(--aux-offset-y, 20px);
+    left: var(--aux-offset-x, 20px);
 }
 
 /* ── Toggle Button ── */

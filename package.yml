@@ -1,5 +1,5 @@
 package: aux
-version: '1.1.0'
+version: '1.2.0'
 author: 'Michelle Falke'
 supportpage: https://github.com/mi-shelly/aux
 requires:
@@ -21,6 +21,8 @@ default_config:
     active: 'true'
     position: 'bottom-right'
     button_color: '#1a73e8'
+    offset_x: 20
+    offset_y: 50
 installer_ignore:
     - '.git'
     - '.github'

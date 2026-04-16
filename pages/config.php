@@ -9,6 +9,8 @@ if (rex_post('config-submit', 'string') !== '') {
     $addon->setConfig('active', rex_post('active', 'string', 'true'));
     $addon->setConfig('position', rex_post('position', 'string', 'bottom-right'));
     $addon->setConfig('button_color', rex_post('button_color', 'string', '#1a73e8'));
+    $addon->setConfig('offset_x', max(0, (int) rex_post('offset_x', 'int', 20)));
+    $addon->setConfig('offset_y', max(0, (int) rex_post('offset_y', 'int', 50)));
 
     echo rex_view::success($addon->i18n('aux_config_saved'));
 }
@@ -17,6 +19,8 @@ if (rex_post('config-submit', 'string') !== '') {
 $active = $addon->getConfig('active', 'true');
 $position = $addon->getConfig('position', 'bottom-right');
 $buttonColor = $addon->getConfig('button_color', '#1a73e8');
+$offsetX = (int) $addon->getConfig('offset_x', 20);
+$offsetY = (int) $addon->getConfig('offset_y', 50);
 
 // Build form
 $content = '';
@@ -48,6 +52,20 @@ $select->addOption($addon->i18n('aux_position_top_right'), 'top-right');
 $select->addOption($addon->i18n('aux_position_top_left'), 'top-left');
 $select->setSelected($position);
 $n['field'] = $select->get();
+$formElements[] = $n;
+
+// Offset X (horizontal, px from side)
+$n = [];
+$n['label'] = '<label for="aux-offset-x">' . $addon->i18n('aux_offset_x') . '</label>';
+$n['field'] = '<input class="form-control" type="number" min="0" step="1" id="aux-offset-x" name="offset_x" value="' . rex_escape((string) $offsetX) . '" />'
+    . '<p class="help-block small">' . $addon->i18n('aux_offset_x_help') . '</p>';
+$formElements[] = $n;
+
+// Offset Y (vertical, px from edge)
+$n = [];
+$n['label'] = '<label for="aux-offset-y">' . $addon->i18n('aux_offset_y') . '</label>';
+$n['field'] = '<input class="form-control" type="number" min="0" step="1" id="aux-offset-y" name="offset_y" value="' . rex_escape((string) $offsetY) . '" />'
+    . '<p class="help-block small">' . $addon->i18n('aux_offset_y_help') . '</p>';
 $formElements[] = $n;
 
 // Button color
