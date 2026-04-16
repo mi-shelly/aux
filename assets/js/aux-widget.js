@@ -220,7 +220,7 @@
 
             const alignOptions = ['none', 'left', 'center', 'right'];
             const alignBtns = alignOptions.map(a => `
-                <button class="aux-align-btn" data-align="${a}" aria-pressed="false">
+                <button class="aux-contrast-btn aux-align-btn" data-align="${a}" aria-pressed="false">
                     ${this.t('align_' + a)}
                 </button>
             `).join('');
