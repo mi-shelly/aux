@@ -21,3 +21,12 @@ default_config:
     active: 'true'
     position: 'bottom-right'
     button_color: '#1a73e8'
+installer_ignore:
+    - '.git'
+    - '.github'
+    - '.gitignore'
+    - '.DS_Store'
+    - 'node_modules'
+    - '.idea'
+    - '.vscode'
+    - '*.log'
