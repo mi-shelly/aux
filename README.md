@@ -4,6 +4,18 @@ Ein Barrierefreiheits-Widget als REDAXO-AddOn. Aux zeigt einen schwebenden Butto
 
 ![REDAXO](https://img.shields.io/badge/REDAXO-%3E%3D5.16-red) ![PHP](https://img.shields.io/badge/PHP-%3E%3D8.1-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
+## Wichtiger Hinweis zur Barrierefreiheit
+
+> **Aux ersetzt keine echte Barrierefreiheit.**
+>
+> Ein zugängliches Web entsteht durch saubere semantische HTML-Struktur, ausreichende Farbkontraste, sinnvolle Alt-Texte, korrekte ARIA-Attribute und eine durchdachte Tastaturnavigation – kurz: durch barrierefreie Entwicklung von Grund auf.
+>
+> Aux ist ein ergänzendes Hilfsmittel für Nutzer, die auf einer Website individuelle Anpassungen benötigen (z. B. größere Schrift, höherer Kontrast, Dyslexie-Schrift). Es verbessert die Benutzbarkeit für bestimmte Zielgruppen – es macht eine Seite aber nicht automatisch WCAG-konform oder BFSG-compliant.
+>
+> Die Optionen arbeiten nach dem **Best-Effort-Prinzip**: CSS-Klassen werden auf `<html>` gesetzt und greifen in den meisten Fällen zuverlässig. Auf Seiten mit sehr spezifischen Styles können einzelne Anpassungen eingeschränkt wirken.
+>
+> **Aux ist kein Ersatz für einen Accessibility-Audit.**
+
 ## Features
 
 ### Accessibility-Profile

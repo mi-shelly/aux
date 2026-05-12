@@ -462,22 +462,49 @@
 
 /* ── Responsive ── */
 @media (max-width: 480px) {
+    /*
+     * On mobile we use position:absolute (not fixed) so the panel stays
+     * relative to the widget container. This matters when a CSS filter on
+     * <html> (dark/light/high/inverted contrast modes) creates a new
+     * containing block — position:fixed children of a filtered ancestor
+     * are no longer viewport-anchored. Since the JS already corrects the
+     * *container's* position, an absolutely-placed panel inside it lands
+     * in exactly the right spot without any extra maths.
+     */
     .aux-panel {
-        width: calc(100vw - 24px);
+        /* Clamp width to near full viewport width */
+        width: min(340px, calc(100vw - 24px));
         max-height: 70vh;
-        position: fixed;
-        left: 12px !important;
-        right: 12px !important;
+        position: absolute;
     }
 
-    .aux-widget[data-position="bottom-right"] .aux-panel,
-    .aux-widget[data-position="bottom-left"] .aux-panel {
+    /* Align panel's outer edge with the widget button */
+    .aux-widget[data-position="bottom-right"] .aux-panel {
+        right: 0;
+        left: auto;
         bottom: 80px;
+        top: auto;
     }
 
-    .aux-widget[data-position="top-right"] .aux-panel,
-    .aux-widget[data-position="top-left"] .aux-panel {
+    .aux-widget[data-position="bottom-left"] .aux-panel {
+        left: 0;
+        right: auto;
+        bottom: 80px;
+        top: auto;
+    }
+
+    .aux-widget[data-position="top-right"] .aux-panel {
+        right: 0;
+        left: auto;
         top: 80px;
+        bottom: auto;
+    }
+
+    .aux-widget[data-position="top-left"] .aux-panel {
+        left: 0;
+        right: auto;
+        top: 80px;
+        bottom: auto;
     }
 }
 

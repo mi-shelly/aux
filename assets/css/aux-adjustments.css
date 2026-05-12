@@ -38,8 +38,12 @@ html.aux-contrast-dark .aux-widget {
     filter: invert(1) hue-rotate(180deg) !important;
 }
 
-/* Keep widget on top even with filter creating stacking context */
+/* When any filter mode is active, ensure the widget stays above everything.
+   JS (applyContrastPositionFix) sets explicit left/top px values to work
+   around the filter-creates-containing-block spec behaviour. */
 html.aux-contrast-dark .aux-widget,
+html.aux-contrast-light .aux-widget,
+html.aux-contrast-high .aux-widget,
 html.aux-contrast-inverted .aux-widget {
     position: fixed !important;
     z-index: 2147483647 !important;

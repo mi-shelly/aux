@@ -77,6 +77,7 @@
             this.rulerEl = null;
             this.ttsActive = false;
             this.ttsUtterance = null;
+            this._positionFixBound = null;
 
             this.load();
             this.createWidget();
@@ -169,6 +170,81 @@
             if (position === 'right') fullPosition = 'bottom-right';
 
             this.container.setAttribute('data-position', fullPosition);
+
+            // Re-anchor position if a filter contrast mode is active
+            this.applyContrastPositionFix();
+        }
+
+        /**
+         * When CSS filter is applied to <html>, the spec says <html> becomes
+         * the containing block for position:fixed descendants. On sites where
+         * the layout is wider than the mobile viewport (e.g. 1200px desktop
+         * layout viewed at 375px), right:20px places the widget 20px from the
+         * html right edge — far off-screen.
+         *
+         * Fix: for every filter-based contrast mode (dark / light / high /
+         * inverted) we override the container's position with explicit left/top
+         * pixel values derived from the visual viewport, bypassing the broken
+         * containing-block math entirely.
+         */
+        applyContrastPositionFix() {
+            if (!this.container || this.container.style.display === 'none') return;
+
+            const FILTER_MODES = ['dark', 'light', 'high', 'inverted'];
+            const position = this.container.getAttribute('data-position') || 'bottom-right';
+            const offsetX = (this.config.offsetX !== undefined) ? Number(this.config.offsetX) : 20;
+            const offsetY = (this.config.offsetY !== undefined) ? Number(this.config.offsetY) : 50;
+            const BUTTON_SIZE = 56; // px – matches .aux-toggle-btn width/height in CSS
+
+            if (FILTER_MODES.includes(this.settings.contrast)) {
+                const vv = window.visualViewport;
+                const vw = vv ? vv.width  : window.innerWidth;
+                const vh = vv ? vv.height : window.innerHeight;
+
+                // Horizontal
+                if (position.includes('right')) {
+                    this.container.style.right = 'auto';
+                    this.container.style.left  = (vw - offsetX - BUTTON_SIZE) + 'px';
+                } else {
+                    this.container.style.left  = offsetX + 'px';
+                    this.container.style.right = 'auto';
+                }
+
+                // Vertical
+                if (position.includes('bottom')) {
+                    this.container.style.bottom = 'auto';
+                    this.container.style.top    = (vh - offsetY - BUTTON_SIZE) + 'px';
+                } else {
+                    this.container.style.top    = offsetY + 'px';
+                    this.container.style.bottom = 'auto';
+                }
+
+                // Keep position updated when the visual viewport changes
+                // (keyboard popup, browser chrome resize, pinch-zoom, etc.)
+                if (!this._positionFixBound) {
+                    this._positionFixBound = () => this.applyContrastPositionFix();
+                    if (window.visualViewport) {
+                        window.visualViewport.addEventListener('resize', this._positionFixBound);
+                        window.visualViewport.addEventListener('scroll', this._positionFixBound);
+                    }
+                    window.addEventListener('resize', this._positionFixBound);
+                }
+            } else {
+                // Normal contrast – let CSS handle positioning via data-position
+                this.container.style.left   = '';
+                this.container.style.right  = '';
+                this.container.style.top    = '';
+                this.container.style.bottom = '';
+
+                if (this._positionFixBound) {
+                    if (window.visualViewport) {
+                        window.visualViewport.removeEventListener('resize', this._positionFixBound);
+                        window.visualViewport.removeEventListener('scroll', this._positionFixBound);
+                    }
+                    window.removeEventListener('resize', this._positionFixBound);
+                    this._positionFixBound = null;
+                }
+            }
         }
 
         buildPanelHTML() {
@@ -595,6 +671,7 @@
             this.handleReadingRuler();
             this.handleVideos();
             this.markBackgroundImages();
+            this.applyContrastPositionFix();
         }
 
         markBackgroundImages() {
