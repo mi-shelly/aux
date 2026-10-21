@@ -14,5 +14,6 @@ aux_offset_x = Horizontal offset (px)
 aux_offset_x_help = Distance from the left or right edge in pixels.
 aux_offset_y = Vertical offset (px)
 aux_offset_y_help = Distance from the top or bottom edge in pixels.
+aux_button_color_warning = The button colour only has a contrast ratio of {0}:1 against white. At least 3:1 is recommended for the white icon, the focus ring and active markers (WCAG 1.4.11).
 aux_save = Save settings
 aux_config_saved = Settings have been saved.

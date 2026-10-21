@@ -2,23 +2,34 @@
  * Aux Accessibility Widget – Page Adjustments
  * These classes are applied to <html> to modify page appearance.
  *
- * Contrast strategy:
+ * Contrast strategy (filters are applied to <body> by JS, see applyFilters()):
  * - Dunkel / Invertiert: filter-based (invert colors, counter-invert media
  *   so images/videos/bg-images look natural). The site's design structure
  *   is preserved; only the luminance is flipped.
  * - Hell: brightness + contrast + saturation boost. Keeps all colors,
  *   just makes the page more readable.
- * - Hoher Kontrast: contrast + saturation boost. Colors stay the same,
- *   they just become more vivid and distinguishable.
+ * - Hoher Kontrast: colour override (white on black, yellow links, white
+ *   borders) – no filter.
  */
 
 /* ══════════════════════════════════
-   DARK MODE – invert, preserve media
+   FILTER MODES (dark / light / high / inverted, + grayscale + brightness)
+   The composed `filter` is set by JS as inline style on <body> (so the
+   widget, a child of <html>, is never filtered). Here: page colour pinning
+   and counter-inversion of media.
    ══════════════════════════════════ */
 
-html.aux-contrast-dark {
-    filter: invert(1) hue-rotate(180deg) !important;
-    background-color: #ffffff !important;
+/* A filter on <body> doesn't reach the canvas / body margins. A fixed backdrop
+   in the site's own page colour, with the same filter (--aux-filter, set by JS),
+   sits behind <body> so no unfiltered strip shows through. */
+html.aux-filtered::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--aux-page-bg, #ffffff);
+    filter: var(--aux-filter);
 }
 
 /* Counter-invert media so they look natural */
@@ -33,49 +44,8 @@ html.aux-contrast-dark svg:not(.aux-widget svg),
 html.aux-contrast-dark .aux-has-bg-image,
 html.aux-contrast-dark [style*="background-image"],
 html.aux-contrast-dark [style*="background:url"],
-html.aux-contrast-dark [style*="background: url"],
-html.aux-contrast-dark .aux-widget {
+html.aux-contrast-dark [style*="background: url"] {
     filter: invert(1) hue-rotate(180deg) !important;
-}
-
-/* When any filter mode is active, ensure the widget stays above everything.
-   JS (applyContrastPositionFix) sets explicit left/top px values to work
-   around the filter-creates-containing-block spec behaviour. */
-html.aux-contrast-dark .aux-widget,
-html.aux-contrast-light .aux-widget,
-html.aux-contrast-high .aux-widget,
-html.aux-contrast-inverted .aux-widget {
-    position: fixed !important;
-    z-index: 2147483647 !important;
-}
-
-
-/* ══════════════════════════════════
-   LIGHT MODE – brighter, no color change
-   ══════════════════════════════════ */
-
-html.aux-contrast-light {
-    filter: brightness(1.12) contrast(1.08) saturate(1.15) !important;
-}
-
-
-/* ══════════════════════════════════
-   HIGH CONTRAST – boost contrast only,
-   keep the site's original colors
-   ══════════════════════════════════ */
-
-html.aux-contrast-high {
-    filter: contrast(1.5) saturate(1.3) !important;
-}
-
-
-/* ══════════════════════════════════
-   INVERTED – pure inversion
-   ══════════════════════════════════ */
-
-html.aux-contrast-inverted {
-    filter: invert(1) !important;
-    background-color: #ffffff !important;
 }
 
 html.aux-contrast-inverted img,
@@ -89,9 +59,42 @@ html.aux-contrast-inverted svg:not(.aux-widget svg),
 html.aux-contrast-inverted .aux-has-bg-image,
 html.aux-contrast-inverted [style*="background-image"],
 html.aux-contrast-inverted [style*="background:url"],
-html.aux-contrast-inverted [style*="background: url"],
-html.aux-contrast-inverted .aux-widget {
+html.aux-contrast-inverted [style*="background: url"] {
     filter: invert(1) !important;
+}
+
+
+/* ══════════════════════════════════
+   HIGH CONTRAST – colour override: white on black, yellow links, white borders.
+   (A contrast() filter would wash out light-grey elements.) The widget sits
+   outside <body>, so it is not affected.
+   ══════════════════════════════════ */
+
+html.aux-contrast-high,
+html.aux-contrast-high body,
+html.aux-contrast-high body *:where(:not(img, video, picture, canvas, iframe)) {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+html.aux-contrast-high body a,
+html.aux-contrast-high body a * {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+}
+
+html.aux-contrast-high body button,
+html.aux-contrast-high body input,
+html.aux-contrast-high body select,
+html.aux-contrast-high body textarea {
+    border: 2px solid #ffffff !important;
+}
+
+html.aux-contrast-high body svg {
+    color: #ffffff !important;
 }
 
 
@@ -116,15 +119,18 @@ html.aux-text-size-3 body {
    LINE HEIGHT (3 steps)
    ═══════════════════════════════ */
 
-html.aux-line-height-1 *:not(.aux-widget *) {
+html.aux-line-height-1 body,
+html.aux-line-height-1 body * {
     line-height: 1.8 !important;
 }
 
-html.aux-line-height-2 *:not(.aux-widget *) {
+html.aux-line-height-2 body,
+html.aux-line-height-2 body * {
     line-height: 2.2 !important;
 }
 
-html.aux-line-height-3 *:not(.aux-widget *) {
+html.aux-line-height-3 body,
+html.aux-line-height-3 body * {
     line-height: 2.6 !important;
 }
 
@@ -133,15 +139,18 @@ html.aux-line-height-3 *:not(.aux-widget *) {
    LETTER SPACING (3 steps)
    ═══════════════════════════════ */
 
-html.aux-letter-spacing-1 *:not(.aux-widget *) {
+html.aux-letter-spacing-1 body,
+html.aux-letter-spacing-1 body * {
     letter-spacing: 0.05em !important;
 }
 
-html.aux-letter-spacing-2 *:not(.aux-widget *) {
+html.aux-letter-spacing-2 body,
+html.aux-letter-spacing-2 body * {
     letter-spacing: 0.1em !important;
 }
 
-html.aux-letter-spacing-3 *:not(.aux-widget *) {
+html.aux-letter-spacing-3 body,
+html.aux-letter-spacing-3 body * {
     letter-spacing: 0.15em !important;
 }
 
@@ -150,15 +159,18 @@ html.aux-letter-spacing-3 *:not(.aux-widget *) {
    TEXT ALIGNMENT
    ═══════════════════════════════ */
 
-html.aux-text-align-left *:not(.aux-widget *) {
+html.aux-text-align-left body,
+html.aux-text-align-left body * {
     text-align: left !important;
 }
 
-html.aux-text-align-center *:not(.aux-widget *) {
+html.aux-text-align-center body,
+html.aux-text-align-center body * {
     text-align: center !important;
 }
 
-html.aux-text-align-right *:not(.aux-widget *) {
+html.aux-text-align-right body,
+html.aux-text-align-right body * {
     text-align: right !important;
 }
 
@@ -265,20 +277,62 @@ html.aux-highlight-headings h6:not(.aux-widget h6)::before {
 
 /* ═══════════════════════════════
    BIG CURSOR
+   Arrow, hand (links/buttons/controls) and text cursor in 48px. The cursors are
+   CSS variables on <html> so the widget (shadow DOM) can use them too.
    ═══════════════════════════════ */
+
+html.aux-big-cursor {
+    --aux-cur-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 6l28 16-12 4-4 12z' fill='%23000' stroke='%23fff' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 8 6, auto;
+    --aux-cur-hand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='%23fff' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 4, pointer;
+    --aux-cur-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48' fill='none' stroke-linecap='round'%3E%3Cpath d='M17 8h14M24 8v32M17 40h14' stroke='%23fff' stroke-width='8'/%3E%3Cpath d='M17 8h14M24 8v32M17 40h14' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") 24 24, text;
+}
 
 html.aux-big-cursor,
 html.aux-big-cursor * {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 6l28 16-12 4-4 12z' fill='%23000' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto !important;
+    cursor: var(--aux-cur-arrow) !important;
 }
 
-html.aux-big-cursor a,
+html.aux-big-cursor a[href],
+html.aux-big-cursor a[href] *,
 html.aux-big-cursor button,
+html.aux-big-cursor button *,
+html.aux-big-cursor summary,
+html.aux-big-cursor summary *,
+html.aux-big-cursor label[for],
+html.aux-big-cursor select,
+html.aux-big-cursor [onclick],
 html.aux-big-cursor [role="button"],
+html.aux-big-cursor [role="button"] *,
+html.aux-big-cursor [role="link"],
+html.aux-big-cursor [role="tab"],
+html.aux-big-cursor [role="menuitem"],
+html.aux-big-cursor [role="switch"],
+html.aux-big-cursor [role="checkbox"],
+html.aux-big-cursor [role="radio"],
+html.aux-big-cursor [tabindex]:not([tabindex="-1"]):not(input):not(textarea),
 html.aux-big-cursor input[type="submit"],
 html.aux-big-cursor input[type="button"],
-html.aux-big-cursor select {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M20 6v14h-6l10 16 10-16h-6V6z' fill='%23000' stroke='%23fff' stroke-width='2' transform='rotate(180 24 24)'/%3E%3C/svg%3E") 24 4, pointer !important;
+html.aux-big-cursor input[type="reset"],
+html.aux-big-cursor input[type="image"],
+html.aux-big-cursor input[type="checkbox"],
+html.aux-big-cursor input[type="radio"],
+html.aux-big-cursor input[type="file"],
+html.aux-big-cursor input[type="range"] {
+    cursor: var(--aux-cur-hand) !important;
+}
+
+html.aux-big-cursor input:not([type]),
+html.aux-big-cursor input[type="text"],
+html.aux-big-cursor input[type="search"],
+html.aux-big-cursor input[type="email"],
+html.aux-big-cursor input[type="url"],
+html.aux-big-cursor input[type="tel"],
+html.aux-big-cursor input[type="password"],
+html.aux-big-cursor input[type="number"],
+html.aux-big-cursor textarea,
+html.aux-big-cursor [contenteditable="true"],
+html.aux-big-cursor [contenteditable="true"] * {
+    cursor: var(--aux-cur-text) !important;
 }
 
 
@@ -286,9 +340,9 @@ html.aux-big-cursor select {
    STOP ANIMATIONS
    ═══════════════════════════════ */
 
-html.aux-stop-animations *:not(.aux-widget *),
-html.aux-stop-animations *:not(.aux-widget *)::before,
-html.aux-stop-animations *:not(.aux-widget *)::after {
+html.aux-stop-animations body *,
+html.aux-stop-animations body *::before,
+html.aux-stop-animations body *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -320,8 +374,14 @@ html.aux-stop-animations img[src$=".gif"]:not(.aux-widget img) {
     font-display: swap;
 }
 
-html.aux-dyslexia-font *:not(.aux-widget *) {
+html.aux-dyslexia-font body,
+html.aux-dyslexia-font body * {
     font-family: 'OpenDyslexic', sans-serif !important;
+}
+
+/* the widget uses the typeface too (via inherited custom property), nothing else */
+html.aux-dyslexia-font {
+    --aux-font: 'OpenDyslexic', sans-serif;
 }
 
 
@@ -329,12 +389,12 @@ html.aux-dyslexia-font *:not(.aux-widget *) {
    FOCUS HIGHLIGHT
    ═══════════════════════════════ */
 
-html.aux-focus-highlight a:focus,
-html.aux-focus-highlight button:focus,
-html.aux-focus-highlight input:focus,
-html.aux-focus-highlight select:focus,
-html.aux-focus-highlight textarea:focus,
-html.aux-focus-highlight [tabindex]:focus {
+html.aux-focus-highlight body a:focus,
+html.aux-focus-highlight body button:focus,
+html.aux-focus-highlight body input:focus,
+html.aux-focus-highlight body select:focus,
+html.aux-focus-highlight body textarea:focus,
+html.aux-focus-highlight body [tabindex]:focus {
     outline: 4px solid #ff6600 !important;
     outline-offset: 4px !important;
     box-shadow: 0 0 0 6px rgba(255, 102, 0, 0.3) !important;
@@ -362,4 +422,50 @@ html.aux-hide-images [style*="background-image"]:not(.aux-widget *) {
     background-color: rgba(26, 115, 232, 0.2) !important;
     outline: 2px solid #1a73e8 !important;
     outline-offset: 2px !important;
+}
+
+
+/* ═══════════════════════════════
+   READING RULER + READING MASK
+   Light-DOM overlays (children of <html>), below the widget, never intercept input.
+   ═══════════════════════════════ */
+
+.aux-reading-ruler,
+.aux-mask {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.aux-reading-ruler {
+    height: 12px;
+    z-index: 2147482999;
+    border-top: 2px solid rgba(255, 0, 0, 0.5);
+    border-bottom: 2px solid rgba(255, 0, 0, 0.5);
+    background: rgba(255, 255, 0, 0.12);
+    top: 50%;
+}
+
+.aux-mask {
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 2147483000;
+}
+
+.aux-mask-top {
+    top: 0;
+}
+
+.aux-mask-bottom {
+    bottom: 0;
+}
+
+@media print {
+    .aux-reading-ruler,
+    .aux-mask {
+        display: none !important;
+    }
 }

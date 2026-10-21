@@ -14,5 +14,6 @@ aux_offset_x = Abstand horizontal (px)
 aux_offset_x_help = Abstand vom linken bzw. rechten Seitenrand in Pixel.
 aux_offset_y = Abstand vertikal (px)
 aux_offset_y_help = Abstand vom oberen bzw. unteren Seitenrand in Pixel.
+aux_button_color_warning = Die Button-Farbe hat nur ein Kontrastverhältnis von {0}:1 zu Weiß. Für das weisse Icon, den Fokusring und die Aktiv-Markierungen werden mindestens 3:1 empfohlen (WCAG 1.4.11).
 aux_save = Einstellungen speichern
 aux_config_saved = Die Einstellungen wurden gespeichert.

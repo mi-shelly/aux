@@ -6,24 +6,56 @@
 /* ── CSS Variables ── */
 .aux-widget {
     --aux-bg: #ffffff;
-    --aux-bg-hover: #f5f5f5;
-    --aux-bg-section: #f9fafb;
-    --aux-text: #1a1a2e;
-    --aux-text-muted: #6b7280;
+    --aux-bg-hover: #f3f4f6;
+    --aux-text: #111827;
+    --aux-text-muted: #4b5563;
     --aux-border: #e5e7eb;
-    --aux-radius: 12px;
-    --aux-radius-sm: 8px;
-    --aux-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    --aux-shadow-btn: 0 4px 16px rgba(0, 0, 0, 0.2);
+    --aux-control-border: #757575; /* >= 3:1 on white (WCAG 1.4.11) for control outlines */
+    /* one radius and one spacing rhythm (4 / 8 / 16 / 20) for everything */
+    --aux-radius: 6px;
+    --aux-pad: 20px;
+    --aux-gap: 8px;
+    --aux-control-h: 36px;
+    --aux-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --aux-shadow-btn: 0 2px 8px rgba(0, 0, 0, 0.2);
     --aux-transition: 0.2s ease;
     --aux-active: #e0edff;
+    --aux-active: color-mix(in srgb, var(--aux-btn-color, #1a73e8) 10%, #ffffff);
     --aux-active-border: var(--aux-btn-color, #1a73e8);
+    /* Checkmark used as shape (mask) so active states don't rely on colour alone */
+    --aux-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
+    /* --aux-font is set on <html> by the dyslexia font option (custom properties cross the shadow boundary);
+       only the typeface applies here, not letter/line spacing, which would break the layout */
+    font-family: var(--aux-font, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+    /* follows the browser's font-size setting, but never below 14px (sites with html{font-size:62.5%}) */
+    --aux-fs: max(14px, 0.875rem);
+    font-size: var(--aux-fs);
     line-height: 1.5;
     color: var(--aux-text);
-    z-index: 999999;
+    cursor: var(--aux-cur-arrow, auto);
+    z-index: 2147483646;
+}
+
+/* The widget lives in a shadow root: site CSS cannot reach it.
+   The host is a pass-through frame that follows the visual viewport (JS: fitFrame). */
+:host {
+    all: initial;
+    position: fixed;
+    inset: 0;
+    z-index: 2147483646;
+    pointer-events: none;
+    container-type: inline-size;
+}
+
+@media print {
+    :host {
+        display: none !important;
+    }
+}
+
+.aux-widget {
+    pointer-events: auto;
 }
 
 /* ── Position ──
@@ -55,15 +87,20 @@
     left: var(--aux-offset-x, 20px);
 }
 
+/* form controls do not inherit the font by default */
+.aux-widget button {
+    font-family: inherit;
+}
+
 /* ── Toggle Button ── */
 .aux-toggle-btn {
     width: 56px;
     height: 56px;
-    border-radius: 50%;
+    border-radius: 12px;
     border: none;
     background: var(--aux-btn-color, #1a73e8);
     color: #ffffff;
-    cursor: pointer;
+    cursor: var(--aux-cur-hand, pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,8 +111,8 @@
 }
 
 .aux-toggle-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
 }
 
 .aux-toggle-btn:focus-visible {
@@ -88,48 +125,45 @@
     height: 28px;
 }
 
-/* ── Panel ── */
+/* ── Panel (off-canvas, full height, slides in from the widget's side) ── */
 .aux-panel {
-    position: absolute;
-    width: 340px;
-    max-height: 80vh;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: min(420px, 100%); /* wide enough for the 4 alignment buttons in one row; % of the frame/viewport, not 100vw (the layout viewport can be wider than the screen) */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
     background: var(--aux-bg);
-    border-radius: var(--aux-radius);
     box-shadow: var(--aux-shadow);
-    border: 1px solid var(--aux-border);
+    border-left: 1px solid var(--aux-border);
     overflow: hidden;
-    opacity: 0;
     visibility: hidden;
-    transform: translateY(10px) scale(0.95);
-    transition: opacity var(--aux-transition), transform var(--aux-transition), visibility var(--aux-transition);
+    transform: translateX(100%);
+    /* hide only after the slide-out; opening is instant so focus() works right away */
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
     z-index: 1;
 }
 
-/* Panel position relative to button */
-.aux-widget[data-position="bottom-right"] .aux-panel {
-    bottom: 70px;
-    right: 0;
-}
-
-.aux-widget[data-position="bottom-left"] .aux-panel {
-    bottom: 70px;
+.aux-widget[data-position$="left"] .aux-panel {
+    right: auto;
     left: 0;
+    transform: translateX(-100%);
+    border-left: none;
+    border-right: 1px solid var(--aux-border);
 }
 
-.aux-widget[data-position="top-right"] .aux-panel {
-    top: 70px;
-    right: 0;
-}
-
-.aux-widget[data-position="top-left"] .aux-panel {
-    top: 70px;
-    left: 0;
-}
-
-.aux-panel-open {
-    opacity: 1;
+.aux-panel-open,
+.aux-widget[data-position$="left"] .aux-panel-open {
     visibility: visible;
-    transform: translateY(0) scale(1);
+    transform: none;
+    transition-delay: 0s;
+}
+
+/* The panel covers the corner where the button sits; its close button replaces it */
+.aux-widget-open .aux-toggle-btn {
+    visibility: hidden;
 }
 
 /* ── Panel Header ── */
@@ -137,16 +171,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 12px var(--aux-pad);
     border-bottom: 1px solid var(--aux-border);
     background: var(--aux-bg);
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    flex: 0 0 auto;
 }
 
 .aux-panel-title {
-    font-size: 16px;
+    font-size: calc(var(--aux-fs) * 16 / 14);
     font-weight: 600;
     margin: 0;
     display: flex;
@@ -155,18 +187,15 @@
     color: var(--aux-text);
 }
 
-.aux-panel-title svg {
-    color: var(--aux-btn-color, #1a73e8);
-}
-
 .aux-close-btn {
-    width: 32px;
-    height: 32px;
+    width: var(--aux-control-h);
+    height: var(--aux-control-h);
+    margin-right: -8px;
     border: none;
     background: transparent;
-    font-size: 22px;
-    cursor: pointer;
-    border-radius: 50%;
+    font-size: calc(var(--aux-fs) * 22 / 14);
+    cursor: var(--aux-cur-hand, pointer);
+    border-radius: var(--aux-radius);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -186,14 +215,23 @@
 
 /* ── Panel Body ── */
 .aux-panel-body {
+    flex: 1 1 auto;
+    min-height: 0; /* lets the flex child shrink and scroll instead of overflowing */
     overflow-y: auto;
-    max-height: calc(80vh - 60px);
-    padding: 8px 0;
+    scrollbar-gutter: stable; /* no sideways jump if a scrollbar appears */
+}
+
+/* ── Panel Footer (fixed, outside the scroll area) ── */
+.aux-panel-footer {
+    flex: 0 0 auto;
+    padding: 12px var(--aux-pad);
+    border-top: 1px solid var(--aux-border);
+    background: var(--aux-bg);
 }
 
 /* ── Sections ── */
 .aux-section {
-    padding: 12px 20px;
+    padding: var(--aux-pad);
     border-bottom: 1px solid var(--aux-border);
 }
 
@@ -202,33 +240,34 @@
 }
 
 .aux-section-title {
-    font-size: 11px;
+    font-size: calc(var(--aux-fs) * 12 / 14);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     color: var(--aux-text-muted);
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
 }
 
 /* ── Profiles Grid ── */
 .aux-profiles-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* equal columns whatever the label widths */
+    gap: var(--aux-gap);
 }
 
 .aux-profile-btn {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    padding: 10px 4px;
-    border: 2px solid var(--aux-border);
-    border-radius: var(--aux-radius-sm);
+    padding: 12px 4px;
+    border: 1px solid var(--aux-control-border);
+    border-radius: var(--aux-radius);
     background: var(--aux-bg);
-    cursor: pointer;
+    cursor: var(--aux-cur-hand, pointer);
     transition: all var(--aux-transition);
-    font-size: 12px;
+    font-size: calc(var(--aux-fs) * 12 / 14);
     color: var(--aux-text);
 }
 
@@ -245,21 +284,54 @@
 .aux-profile-active {
     background: var(--aux-active) !important;
     border-color: var(--aux-active-border) !important;
+    box-shadow: inset 0 0 0 1px var(--aux-active-border);
+}
+
+/* Checkmark badge in the corner */
+.aux-profile-active::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--aux-active-border);
+}
+
+.aux-profile-active::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    z-index: 1;
+    background: #fff;
+    -webkit-mask: var(--aux-check) center / 10px no-repeat;
+    mask: var(--aux-check) center / 10px no-repeat;
 }
 
 .aux-profile-icon {
-    font-size: 20px;
+    display: flex;
+}
+
+.aux-profile-icon svg {
+    width: 24px;
+    height: 24px;
 }
 
 .aux-profile-label {
-    font-size: 11px;
+    font-size: calc(var(--aux-fs) * 12 / 14);
     text-align: center;
     line-height: 1.2;
+    max-width: 100%;
+    overflow-wrap: anywhere; /* long words (wide typefaces, translations) wrap instead of overflowing */
 }
 
 /* ── Contrast / Option Buttons ── */
 .aux-option-group {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .aux-option-group:last-child {
@@ -268,10 +340,30 @@
 
 .aux-option-label {
     display: block;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 6px;
+    font-size: calc(var(--aux-fs) * 13 / 14);
+    font-weight: 600;
+    margin-bottom: var(--aux-gap);
     color: var(--aux-text);
+}
+
+/* Label left, stepper right (same rhythm as the toggle rows) */
+.aux-option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+    margin-bottom: 0;
+}
+
+/* regular group after a row of steppers: restore the group rhythm */
+.aux-option-row + .aux-option-group:not(.aux-option-row) {
+    margin-top: 16px;
+}
+
+.aux-option-row .aux-option-label {
+    margin-bottom: 0;
+    font-weight: 400;
 }
 
 .aux-contrast-group {
@@ -281,12 +373,17 @@
 }
 
 .aux-contrast-btn {
-    padding: 5px 10px;
-    border: 1px solid var(--aux-border);
-    border-radius: 20px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 9px;
+    font-weight: 500; /* same in every state: nothing may change size when activated */
+    border: 1px solid var(--aux-control-border);
+    border-radius: var(--aux-radius);
     background: var(--aux-bg);
-    cursor: pointer;
-    font-size: 12px;
+    cursor: var(--aux-cur-hand, pointer);
+    font-size: calc(var(--aux-fs) * 12 / 14);
     color: var(--aux-text);
     transition: all var(--aux-transition);
 }
@@ -303,7 +400,38 @@
 .aux-contrast-active {
     background: var(--aux-active) !important;
     border-color: var(--aux-active-border) !important;
-    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--aux-active-border);
+}
+
+/* Indicator slot, always reserved so activating an option never shifts anything:
+   empty circle = off, filled circle with checkmark = on (not colour alone) */
+.aux-contrast-btn::before {
+    content: '';
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+    border: 1.5px solid var(--aux-control-border);
+    border-radius: 50%;
+}
+
+.aux-contrast-active::before {
+    border-color: var(--aux-active-border);
+    background: var(--aux-active-border);
+}
+
+.aux-contrast-active::after {
+    content: '';
+    position: absolute;
+    left: 10px; /* 9px padding + 1px: centred in the 12px circle */
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    margin-top: -5px;
+    background: #ffffff;
+    -webkit-mask: var(--aux-check) center / contain no-repeat;
+    mask: var(--aux-check) center / contain no-repeat;
 }
 
 /* ── Stepper Controls ── */
@@ -311,19 +439,19 @@
     display: flex;
     align-items: center;
     gap: 0;
-    border: 1px solid var(--aux-border);
-    border-radius: var(--aux-radius-sm);
+    border: 1px solid var(--aux-control-border);
+    border-radius: var(--aux-radius);
     overflow: hidden;
     width: fit-content;
 }
 
 .aux-stepper-btn {
-    width: 36px;
-    height: 34px;
+    width: var(--aux-control-h);
+    height: calc(var(--aux-control-h) - 2px);
     border: none;
     background: var(--aux-bg);
-    cursor: pointer;
-    font-size: 16px;
+    cursor: var(--aux-cur-hand, pointer);
+    font-size: calc(var(--aux-fs) * 16 / 14);
     font-weight: 600;
     color: var(--aux-text);
     transition: background var(--aux-transition);
@@ -347,27 +475,28 @@
 }
 
 .aux-stepper-value {
-    width: 36px;
+    width: var(--aux-control-h);
     text-align: center;
-    font-size: 14px;
+    font-size: calc(var(--aux-fs) * 14 / 14);
     font-weight: 600;
     border-left: 1px solid var(--aux-border);
     border-right: 1px solid var(--aux-border);
-    line-height: 34px;
+    line-height: calc(var(--aux-control-h) - 2px);
     color: var(--aux-text);
 }
 
 /* ── Toggle Switches ── */
 .aux-toggle-row {
-    padding: 4px 0;
+    padding: 0;
 }
 
 .aux-toggle-label {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
-    font-size: 13px;
+    min-height: 40px;
+    cursor: var(--aux-cur-hand, pointer);
+    font-size: calc(var(--aux-fs) * 13 / 14);
     color: var(--aux-text);
 }
 
@@ -375,22 +504,22 @@
     position: relative;
     border: none;
     background: transparent;
-    cursor: pointer;
+    cursor: var(--aux-cur-hand, pointer);
     padding: 0;
 }
 
 .aux-toggle:focus-visible {
     outline: 2px solid var(--aux-active-border);
-    outline-offset: 4px;
+    outline-offset: 3px;
     border-radius: 12px;
 }
 
 .aux-toggle-track {
     display: block;
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    background: #d1d5db;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--aux-control-border);
     position: relative;
     transition: background var(--aux-transition);
 }
@@ -401,8 +530,8 @@
 
 .aux-toggle-thumb {
     display: block;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #ffffff;
     position: absolute;
@@ -413,23 +542,33 @@
 }
 
 .aux-toggle-active .aux-toggle-thumb {
-    transform: translateX(18px);
+    transform: translateX(20px);
+}
+
+/* Checkmark inside the thumb when on */
+.aux-toggle-active .aux-toggle-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    background: var(--aux-active-border);
+    -webkit-mask: var(--aux-check) center / contain no-repeat;
+    mask: var(--aux-check) center / contain no-repeat;
 }
 
 /* ── Reset ── */
-.aux-section-reset {
-    text-align: center;
-    padding: 12px 20px 16px;
-}
-
 .aux-reset-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--aux-border);
-    border-radius: var(--aux-radius-sm);
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--aux-control-border);
+    border-radius: var(--aux-radius);
     background: var(--aux-bg);
-    cursor: pointer;
-    font-size: 13px;
+    cursor: var(--aux-cur-hand, pointer);
+    font-size: calc(var(--aux-fs) * 13 / 14);
     font-weight: 500;
     color: var(--aux-text-muted);
     transition: all var(--aux-transition);
@@ -446,65 +585,109 @@
     outline-offset: 2px;
 }
 
-/* ── Reading Ruler ── */
-.aux-reading-ruler {
+/* ── Text reader status bar ── */
+.aux-tts-bar {
     position: fixed;
-    left: 0;
-    width: 100%;
-    height: 12px;
-    pointer-events: none;
-    z-index: 999998;
-    border-top: 2px solid rgba(255, 0, 0, 0.5);
-    border-bottom: 2px solid rgba(255, 0, 0, 0.5);
-    background: rgba(255, 255, 0, 0.12);
-    top: 50%;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: calc(100% - 32px);
+    padding: 10px 12px 10px 16px;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    box-shadow: var(--aux-shadow);
+    font-size: calc(var(--aux-fs) * 13 / 14);
 }
 
-/* ── Responsive ── */
-@media (max-width: 480px) {
-    /*
-     * On mobile we use position:absolute (not fixed) so the panel stays
-     * relative to the widget container. This matters when a CSS filter on
-     * <html> (dark/light/high/inverted contrast modes) creates a new
-     * containing block — position:fixed children of a filtered ancestor
-     * are no longer viewport-anchored. Since the JS already corrects the
-     * *container's* position, an absolutely-placed panel inside it lands
-     * in exactly the right spot without any extra maths.
-     */
+.aux-tts-bar[hidden] {
+    display: none;
+}
+
+.aux-tts-stop {
+    flex: 0 0 auto;
+    min-height: 32px;
+    padding: 4px 14px;
+    border: 2px solid #ffffff;
+    border-radius: var(--aux-radius);
+    background: #ffffff;
+    color: #111827;
+    font: inherit;
+    font-weight: 600;
+    cursor: var(--aux-cur-hand, pointer);
+}
+
+.aux-tts-stop:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
+/* Phones: use the full width instead of leaving a sliver of the page */
+@container (max-width: 420px) {
     .aux-panel {
-        /* Clamp width to near full viewport width */
-        width: min(340px, calc(100vw - 24px));
-        max-height: 70vh;
-        position: absolute;
+        width: 100%;
+    }
+}
+
+/* ── Forced colors (Windows High Contrast): keep switches and checkmarks visible ── */
+@media (forced-colors: active) {
+    .aux-toggle-track {
+        forced-color-adjust: none;
+        background: Canvas;
+        border: 2px solid ButtonText;
+        box-sizing: border-box;
     }
 
-    /* Align panel's outer edge with the widget button */
-    .aux-widget[data-position="bottom-right"] .aux-panel {
-        right: 0;
-        left: auto;
-        bottom: 80px;
-        top: auto;
+    .aux-toggle-thumb {
+        forced-color-adjust: none;
+        background: ButtonText;
     }
 
-    .aux-widget[data-position="bottom-left"] .aux-panel {
-        left: 0;
-        right: auto;
-        bottom: 80px;
-        top: auto;
+    .aux-toggle-active .aux-toggle-track {
+        background: Highlight;
+        border-color: Highlight;
     }
 
-    .aux-widget[data-position="top-right"] .aux-panel {
-        right: 0;
-        left: auto;
-        top: 80px;
-        bottom: auto;
+    .aux-toggle-active .aux-toggle-thumb {
+        background: HighlightText;
     }
 
-    .aux-widget[data-position="top-left"] .aux-panel {
-        left: 0;
-        right: auto;
-        top: 80px;
-        bottom: auto;
+    .aux-toggle-active .aux-toggle-thumb::after {
+        forced-color-adjust: none;
+        background: Highlight;
+    }
+
+    .aux-contrast-btn::before {
+        forced-color-adjust: none;
+        border-color: ButtonText;
+    }
+
+    .aux-contrast-active::before {
+        border-color: Highlight;
+        background: Highlight;
+    }
+
+    .aux-contrast-active::after {
+        forced-color-adjust: none;
+        background: HighlightText;
+    }
+
+    .aux-profile-active::after {
+        forced-color-adjust: none;
+        background: Highlight;
+    }
+
+    .aux-profile-active::before {
+        forced-color-adjust: none;
+        background: HighlightText;
+    }
+
+    .aux-contrast-active,
+    .aux-profile-active {
+        border-width: 3px !important;
     }
 }
 
@@ -513,5 +696,6 @@
     .aux-widget,
     .aux-widget * {
         transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
     }
 }

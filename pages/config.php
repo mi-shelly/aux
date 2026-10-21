@@ -23,6 +23,12 @@ $buttonColor = $addon->getConfig('button_color', '#1a73e8');
 $offsetX = (int) $addon->getConfig('offset_x', 20);
 $offsetY = (int) $addon->getConfig('offset_y', 50);
 
+// The icon is white on the button colour; the focus ring and active states use the colour on white
+$colorContrast = FriendsOfRedaxo\Aux\Aux::contrastRatio($buttonColor, '#ffffff');
+if ($colorContrast < 3.0) {
+    echo rex_view::warning($addon->i18n('aux_button_color_warning', number_format($colorContrast, 1, ',', '')));
+}
+
 // Build form
 $content = '';
 
